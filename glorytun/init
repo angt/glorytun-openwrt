@@ -1,14 +1,27 @@
 #!/bin/sh /etc/rc.common
+# shellcheck disable=SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
 
-START=90
-STOP=10
-USE_PROCD=1
+# shellcheck disable=SC2034
+{
+	START=90
+	STOP=10
+	USE_PROCD=1
+}
 
 PROG_NAME=glorytun
 PROG=/usr/sbin/$PROG_NAME
 
+_log() {
+	logger -p daemon.info -t $PROG_NAME "$@"
+}
+
+_err() {
+	logger -p daemon.err -t $PROG_NAME "$@"
+}
+
 validate_section() {
-	uci_validate_section $PROG_NAME $PROG_NAME "$1" \
+	uci_validate_section glorytun mud "$1" \
 		'enable:bool:0'        \
 		'key:string'           \
 		'server:host'          \
@@ -19,8 +32,12 @@ validate_section() {
 start_instance() {
 	local enable key server port dev
 
-	validate_section "$1" || return
-	[ "$enable" = "1" ]   || return 0
+	validate_section "$1" || {
+		_err "validation failed"
+		return 1
+	}
+
+	[ "$enable" = "1" ] || return
 	[ "$key"    ] || return
 	[ "$server" ] || return
 	[ "$port"   ] || return
@@ -28,6 +45,8 @@ start_instance() {
 	keyfile="/tmp/$PROG_NAME.key"
 	( umask 077; echo "$key" > "$keyfile" )
 	key=""
+
+	_log "starting $PROG_NAME instance $*"
 
 	procd_open_instance
 
