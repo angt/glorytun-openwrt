@@ -1,29 +1,25 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=glorytun
-PKG_VERSION:=0.3.2
+PKG_VERSION:=0.3.3
 PKG_RELEASE:=0
-
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/angt/$(PKG_NAME)/releases/download/v$(PKG_VERSION)
-PKG_HASH:=0121a2ac8e214827548ad6d090a9d0b147c28a8587ef288fe80304e5d88418ca
-
+PKG_SOURCE:=glorytun-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/angt/glorytun/releases/download/v$(PKG_VERSION)
+PKG_HASH:=7c385e52ad69cfdf38b5cf42ed2170ad50df001d5c43eb78339af4c6514e66cd
 PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/$(PKG_NAME)
+define Package/glorytun
 SECTION:=net
 CATEGORY:=Network
-SUBMENU:=VPN
-TITLE:=Glorytun
 DEPENDS:=+kmod-tun +libsodium +librt
+TITLE:=Glorytun
 URL:=https://github.com/angt/glorytun
+SUBMENU:=VPN
 endef
 
-TARGET_CPPFLAGS += -DGT_RUNDIR=\\\"/var/run/$(PKG_NAME)\\\"
-
-define Package/$(PKG_NAME)/description
+define Package/glorytun/description
 Glorytun is a vpn designed to improve your internet connectivity:
  - Fast and highly secure.
  - Multipath and active failover.
@@ -31,17 +27,17 @@ Glorytun is a vpn designed to improve your internet connectivity:
  - Path MTU discovery without ICMP.
 endef
 
-define Package/$(PKG_NAME)/conffiles
-/etc/config/$(PKG_NAME)
+define Package/glorytun/conffiles
+/etc/config/glorytun
 endef
 
-define Package/$(PKG_NAME)/install
+define Package/glorytun/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME) $(1)/usr/sbin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/glorytun $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) init $(1)/etc/init.d/$(PKG_NAME)
+	$(INSTALL_BIN) init $(1)/etc/init.d/glorytun
 	$(INSTALL_DIR) $(1)/etc/config
-	touch $(1)/etc/config/$(PKG_NAME)
+	touch $(1)/etc/config/glorytun
 endef
 
-$(eval $(call BuildPackage,$(PKG_NAME)))
+$(eval $(call BuildPackage,glorytun))
